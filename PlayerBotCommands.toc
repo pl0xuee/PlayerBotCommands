@@ -1,0 +1,15 @@
+## Interface: 30300
+## Title: PlayerBot Commands
+## Version: 1.0
+## Author: Bot Command Manager
+## Description: Sleek playerbot command interface for Azerothcore WOTLK 3.3.5
+
+PlayerBotCommands.lua
+ui.lua
+commands/core.lua
+commands/movement.lua
+commands/combat.lua
+commands/spells.lua
+commands/social.lua
+commands/admin.lua
+utils/helpers.lua
