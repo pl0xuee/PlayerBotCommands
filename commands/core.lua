@@ -40,18 +40,7 @@ local function ui(args)
 end
 
 local function chatmode(args)
-    local mode = string.upper(args[1] or "AUTO")
-    if mode ~= "AUTO" and mode ~= "PARTY" and mode ~= "RAID" then
-        print("|cffff0000[PlayerBot]|r Use: /pb chatmode auto|party|raid")
-        return
-    end
-
-    PLAYERBOT.chatMode = mode
-    print("|cff00ffff[PlayerBot]|r Chat mode set to " .. mode)
-
-    if PLAYERBOT.UI and PLAYERBOT.UI.RefreshHeader then
-        PLAYERBOT.UI:RefreshHeader()
-    end
+    print("|cff00ffff[PlayerBot]|r Chat routing is automatic (RAID first, then PARTY).")
 end
 
 -- Register commands

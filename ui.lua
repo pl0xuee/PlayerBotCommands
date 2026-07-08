@@ -6,7 +6,7 @@ local UI = PLAYERBOT.UI
 
 local layout = {
     panelWidth = 486,
-    panelHeight = 276,
+    panelHeight = 236,
     sideWidth = 104,
     browserWidth = 346,
     browserHeight = 188,
@@ -18,20 +18,31 @@ local layout = {
     actionGapY = 4,
 }
 
+local SOLID = "Interface\\Buttons\\WHITE8x8"
+
+-- Modern Wrath of the Lich King inspired theme: deep frost slate + warm gold trim.
 local palette = {
-    panel = { 0.05, 0.07, 0.10, 0.76 },
-    section = { 0.09, 0.12, 0.17, 0.68 },
-    accent = { 0.13, 0.66, 0.84, 1.00 },
-    accentSoft = { 0.09, 0.45, 0.56, 0.95 },
-    border = { 0.22, 0.30, 0.40, 0.95 },
-    text = { 0.94, 0.97, 1.00, 1.00 },
-    muted = { 0.76, 0.81, 0.88, 1.00 },
-    buttonDefault = { 0.14, 0.18, 0.24, 0.80 },
-    buttonPress = { 0.10, 0.45, 0.58, 0.88 },
-    toneAttack = { 0.29, 0.16, 0.17, 0.82 },
-    toneHeal = { 0.13, 0.24, 0.17, 0.82 },
-    toneMove = { 0.22, 0.18, 0.12, 0.82 },
-    toneSupport = { 0.13, 0.19, 0.26, 0.82 },
+    panel = { 0.035, 0.050, 0.078, 0.96 },
+    header = { 0.075, 0.105, 0.150, 0.98 },
+    section = { 0.060, 0.082, 0.120, 0.92 },
+    accent = { 0.36, 0.74, 0.95, 1.00 },
+    accentSoft = { 0.90, 0.75, 0.38, 1.00 },
+    gold = { 0.90, 0.75, 0.38, 1.00 },
+    goldBright = { 1.00, 0.86, 0.48, 1.00 },
+    frost = { 0.36, 0.74, 0.95, 1.00 },
+    border = { 0.20, 0.28, 0.38, 1.00 },
+    borderInner = { 0.02, 0.03, 0.05, 0.90 },
+    text = { 0.95, 0.97, 1.00, 1.00 },
+    muted = { 0.72, 0.78, 0.86, 1.00 },
+    dark = { 0.05, 0.07, 0.10, 1.00 },
+    buttonDefault = { 0.11, 0.15, 0.21, 0.92 },
+    buttonPress = { 0.20, 0.45, 0.60, 0.95 },
+    catActive = { 0.90, 0.75, 0.38, 1.00 },
+    catInactive = { 0.10, 0.14, 0.19, 0.95 },
+    toneAttack = { 0.34, 0.13, 0.14, 0.92 },
+    toneHeal = { 0.12, 0.26, 0.17, 0.92 },
+    toneMove = { 0.26, 0.20, 0.10, 0.92 },
+    toneSupport = { 0.12, 0.18, 0.26, 0.92 },
 }
 
 local commandCatalog = {
@@ -133,19 +144,34 @@ local commandCatalog = {
 }
 
 local function stylePanel(frame)
-    frame:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
+    frame:SetBackdrop({
+        bgFile = SOLID,
+        edgeFile = SOLID,
+        edgeSize = 1,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
     frame:SetBackdropColor(palette.panel[1], palette.panel[2], palette.panel[3], palette.panel[4])
-    frame:SetBackdropBorderColor(palette.accent[1], palette.accent[2], palette.accent[3], 0.9)
+    frame:SetBackdropBorderColor(palette.gold[1], palette.gold[2], palette.gold[3], 1.0)
 end
 
 local function styleSection(frame)
-    frame:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
+    frame:SetBackdrop({
+        bgFile = SOLID,
+        edgeFile = SOLID,
+        edgeSize = 1,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
     frame:SetBackdropColor(palette.section[1], palette.section[2], palette.section[3], palette.section[4])
     frame:SetBackdropBorderColor(palette.border[1], palette.border[2], palette.border[3], palette.border[4])
 end
 
 local function styleButton(button)
-    button:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8x8", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1 })
+    button:SetBackdrop({
+        bgFile = SOLID,
+        edgeFile = SOLID,
+        edgeSize = 1,
+        insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
     button:SetBackdropColor(palette.buttonDefault[1], palette.buttonDefault[2], palette.buttonDefault[3], palette.buttonDefault[4])
     button:SetBackdropBorderColor(palette.border[1], palette.border[2], palette.border[3], palette.border[4])
 end
@@ -155,17 +181,42 @@ local function makeButton(parent, text, width, height)
     button:SetWidth(width)
     button:SetHeight(height)
     styleButton(button)
+
+    -- Soft top sheen for a modern glass-like finish.
+    local sheen = button:CreateTexture(nil, "ARTWORK")
+    sheen:SetTexture(SOLID)
+    sheen:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+    sheen:SetPoint("TOPRIGHT", button, "TOPRIGHT", -1, -1)
+    sheen:SetHeight(math.max(2, math.floor(height / 2)))
+    sheen:SetGradientAlpha("VERTICAL", 1, 1, 1, 0.0, 1, 1, 1, 0.08)
+    button.sheen = sheen
+
+    -- Frost-gold hover glow (HIGHLIGHT layer shows automatically on mouseover).
+    local glow = button:CreateTexture(nil, "HIGHLIGHT")
+    glow:SetTexture(SOLID)
+    glow:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+    glow:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+    glow:SetBlendMode("ADD")
+    glow:SetVertexColor(palette.gold[1], palette.gold[2], palette.gold[3], 0.14)
+
     button.text = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     button.text:SetPoint("CENTER", button, "CENTER", 0, 0)
     button.text:SetTextColor(palette.text[1], palette.text[2], palette.text[3], palette.text[4])
+    button.text:SetShadowColor(0, 0, 0, 0.85)
+    button.text:SetShadowOffset(1, -1)
     button.text:SetText(text)
     button.baseColor = { palette.buttonDefault[1], palette.buttonDefault[2], palette.buttonDefault[3], palette.buttonDefault[4] }
     button:SetScript("OnMouseDown", function(self)
         self:SetBackdropColor(palette.buttonPress[1], palette.buttonPress[2], palette.buttonPress[3], palette.buttonPress[4])
+        self:SetBackdropBorderColor(palette.goldBright[1], palette.goldBright[2], palette.goldBright[3], 1.0)
+        self.text:SetPoint("CENTER", self, "CENTER", 0, -1)
     end)
     button:SetScript("OnMouseUp", function(self)
         local c = self.baseColor or palette.buttonDefault
         self:SetBackdropColor(c[1], c[2], c[3], c[4])
+        local b = self.borderColor or palette.border
+        self:SetBackdropBorderColor(b[1], b[2], b[3], b[4] or 1.0)
+        self.text:SetPoint("CENTER", self, "CENTER", 0, 0)
     end)
     return button
 end
@@ -210,11 +261,6 @@ local function runAction(action)
     end
 end
 
-local function setChatMode(mode)
-    PLAYERBOT.chatMode = mode
-    if UI and UI.RefreshHeader then UI:RefreshHeader() end
-end
-
 function UI:GetCurrentCategory()
     local index = self.categoryIndex or 1
     return commandCatalog[index], index
@@ -238,9 +284,23 @@ function UI:RenderCategoryButtons()
     if not self.categoryButtons then return end
     for i, button in ipairs(self.categoryButtons) do
         if i == self.categoryIndex then
-            button:SetBackdropColor(palette.accentSoft[1], palette.accentSoft[2], palette.accentSoft[3], palette.accentSoft[4])
+            button.baseColor = { palette.catActive[1], palette.catActive[2], palette.catActive[3], palette.catActive[4] }
+            button.borderColor = { palette.goldBright[1], palette.goldBright[2], palette.goldBright[3], 1.0 }
+            button:SetBackdropColor(palette.catActive[1], palette.catActive[2], palette.catActive[3], palette.catActive[4])
+            button:SetBackdropBorderColor(palette.goldBright[1], palette.goldBright[2], palette.goldBright[3], 1.0)
+            button.text:SetTextColor(palette.dark[1], palette.dark[2], palette.dark[3], 1.0)
+            button.text:SetShadowColor(0, 0, 0, 0)
+            button.text:SetShadowOffset(0, 0)
+            if button.marker then button.marker:Show() end
         else
-            button:SetBackdropColor(0.14, 0.18, 0.24, 0.96)
+            button.baseColor = { palette.catInactive[1], palette.catInactive[2], palette.catInactive[3], palette.catInactive[4] }
+            button.borderColor = { palette.border[1], palette.border[2], palette.border[3], palette.border[4] }
+            button:SetBackdropColor(palette.catInactive[1], palette.catInactive[2], palette.catInactive[3], palette.catInactive[4])
+            button:SetBackdropBorderColor(palette.border[1], palette.border[2], palette.border[3], palette.border[4])
+            button.text:SetTextColor(palette.text[1], palette.text[2], palette.text[3], 1.0)
+            button.text:SetShadowColor(0, 0, 0, 0.85)
+            button.text:SetShadowOffset(1, -1)
+            if button.marker then button.marker:Hide() end
         end
     end
 end
@@ -270,7 +330,9 @@ function UI:RenderActions()
             button.text:SetText(action.label)
             local tone = getActionTint(action)
             button.baseColor = { tone[1], tone[2], tone[3], tone[4] }
+            button.borderColor = { tone[1] + 0.14, tone[2] + 0.14, tone[3] + 0.16, 1.0 }
             button:SetBackdropColor(tone[1], tone[2], tone[3], tone[4])
+            button:SetBackdropBorderColor(button.borderColor[1], button.borderColor[2], button.borderColor[3], 1.0)
             button:SetScript("OnClick", function() runAction(action) end)
             bindTooltip(button, action.label, action.tip)
         else
@@ -290,7 +352,6 @@ end
 
 function UI:RefreshHeader()
     if not self.frame then return end
-    if self.modeLabel then self.modeLabel:SetText("Mode: " .. (PLAYERBOT.chatMode or "AUTO")) end
     if self.lastSentLabel then
         local last = PLAYERBOT.lastSentCommand or ""
         local dest = PLAYERBOT.lastChatType or ""
@@ -316,16 +377,16 @@ function UI:UpdateDynamicLayout(itemsOnPage)
         rowsUsed = 1
     end
 
-    local sideMinHeight = 170
+    local sideMinHeight = 168
     local browserNeeded = 56 + (rowsUsed * layout.actionButtonHeight) + ((rowsUsed - 1) * layout.actionGapY)
     local contentHeight = math.max(sideMinHeight, browserNeeded)
 
     self.sideFrame:SetHeight(contentHeight)
     self.browserFrame:SetHeight(contentHeight)
 
-    local panelHeight = 90 + contentHeight
-    if panelHeight < 252 then
-        panelHeight = 252
+    local panelHeight = 46 + contentHeight
+    if panelHeight < 214 then
+        panelHeight = 214
     end
 
     self.frame:SetHeight(panelHeight)
@@ -346,35 +407,55 @@ function UI:Create()
     frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
     stylePanel(frame)
     self.frame = frame
+
+    -- Header bar with warm gold gradient and a frost accent divider.
+    local headerBar = frame:CreateTexture(nil, "BORDER")
+    headerBar:SetTexture(SOLID)
+    headerBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, -2)
+    headerBar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
+    headerBar:SetHeight(26)
+    headerBar:SetGradientAlpha("VERTICAL", palette.header[1], palette.header[2], palette.header[3], 0.95, palette.header[1] + 0.05, palette.header[2] + 0.05, palette.header[3] + 0.06, 1.0)
+
+    local headerGloss = frame:CreateTexture(nil, "ARTWORK")
+    headerGloss:SetTexture(SOLID)
+    headerGloss:SetPoint("TOPLEFT", headerBar, "TOPLEFT", 0, 0)
+    headerGloss:SetPoint("TOPRIGHT", headerBar, "TOPRIGHT", 0, 0)
+    headerGloss:SetHeight(12)
+    headerGloss:SetGradientAlpha("VERTICAL", 1, 1, 1, 0.0, 1, 1, 1, 0.07)
+
+    local divider = frame:CreateTexture(nil, "OVERLAY")
+    divider:SetTexture(SOLID)
+    divider:SetPoint("TOPLEFT", headerBar, "BOTTOMLEFT", 0, 0)
+    divider:SetPoint("TOPRIGHT", headerBar, "BOTTOMRIGHT", 0, 0)
+    divider:SetHeight(1)
+    divider:SetVertexColor(palette.gold[1], palette.gold[2], palette.gold[3], 0.95)
+
+    local dividerGlow = frame:CreateTexture(nil, "OVERLAY")
+    dividerGlow:SetTexture(SOLID)
+    dividerGlow:SetPoint("TOPLEFT", divider, "BOTTOMLEFT", 0, 0)
+    dividerGlow:SetPoint("TOPRIGHT", divider, "BOTTOMRIGHT", 0, 0)
+    dividerGlow:SetHeight(2)
+    dividerGlow:SetGradientAlpha("VERTICAL", palette.frost[1], palette.frost[2], palette.frost[3], 0.0, palette.frost[1], palette.frost[2], palette.frost[3], 0.35)
+
+    local crest = frame:CreateTexture(nil, "ARTWORK")
+    crest:SetTexture("Interface\\Icons\\INV_Misc_Head_Dragon_01")
+    crest:SetWidth(18)
+    crest:SetHeight(18)
+    crest:SetPoint("LEFT", headerBar, "LEFT", 8, 0)
+    crest:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("TOPLEFT", frame, "TOPLEFT", 12, -9)
-    title:SetTextColor(palette.text[1], palette.text[2], palette.text[3], palette.text[4])
+    title:SetPoint("LEFT", crest, "RIGHT", 7, 0)
+    title:SetTextColor(palette.goldBright[1], palette.goldBright[2], palette.goldBright[3], 1.0)
+    title:SetShadowColor(0, 0, 0, 0.9)
+    title:SetShadowOffset(1, -1)
     title:SetText("PlayerBot Control")
-    local subtitle = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
-    subtitle:SetTextColor(palette.muted[1], palette.muted[2], palette.muted[3], palette.muted[4])
-    subtitle:SetText("Command browser")
-    self.modeLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    self.modeLabel:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -40, -12)
-    self.modeLabel:SetText("Mode: AUTO")
-    local modeAuto = makeButton(frame, "A", 20, 18)
-    modeAuto:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -104, -28)
-    modeAuto:SetScript("OnClick", function() setChatMode("AUTO") end)
-    bindTooltip(modeAuto, "AUTO", "Auto-select PARTY or RAID based on current group.")
-    local modeParty = makeButton(frame, "P", 20, 18)
-    modeParty:SetPoint("LEFT", modeAuto, "RIGHT", 4, 0)
-    modeParty:SetScript("OnClick", function() setChatMode("PARTY") end)
-    bindTooltip(modeParty, "PARTY", "Always send commands to party chat.")
-    local modeRaid = makeButton(frame, "R", 20, 18)
-    modeRaid:SetPoint("LEFT", modeParty, "RIGHT", 4, 0)
-    modeRaid:SetScript("OnClick", function() setChatMode("RAID") end)
-    bindTooltip(modeRaid, "RAID", "Always send commands to raid chat.")
     local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-    close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
+    close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -1)
     local side = CreateFrame("Frame", nil, frame)
     side:SetWidth(layout.sideWidth)
     side:SetHeight(layout.browserHeight)
-    side:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -48)
+    side:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -36)
     styleSection(side)
     self.sideFrame = side
 
@@ -386,15 +467,25 @@ function UI:Create()
     self.browserFrame = browser
     self.categoryButtons = {}
     for i, category in ipairs(commandCatalog) do
-        local button = makeButton(side, category.title, 84, 20)
-        button:SetPoint("TOPLEFT", side, "TOPLEFT", 10, -8 - ((i - 1) * 25))
+        local button = makeButton(side, category.title, 84, 22)
+        button:SetPoint("TOPLEFT", side, "TOPLEFT", 10, -8 - ((i - 1) * 26))
+        local marker = button:CreateTexture(nil, "OVERLAY")
+        marker:SetTexture(SOLID)
+        marker:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+        marker:SetPoint("BOTTOMLEFT", button, "BOTTOMLEFT", 1, 1)
+        marker:SetWidth(3)
+        marker:SetVertexColor(palette.dark[1], palette.dark[2], palette.dark[3], 0.85)
+        marker:Hide()
+        button.marker = marker
         button:SetScript("OnClick", function() UI:SelectCategory(i) end)
         bindTooltip(button, category.title, "Show commands in " .. category.title .. " category.")
         self.categoryButtons[i] = button
     end
     self.categoryLabel = browser:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.categoryLabel:SetPoint("TOPLEFT", browser, "TOPLEFT", 10, -10)
-    self.categoryLabel:SetTextColor(palette.muted[1], palette.muted[2], palette.muted[3], palette.muted[4])
+    self.categoryLabel:SetTextColor(palette.gold[1], palette.gold[2], palette.gold[3], 1.0)
+    self.categoryLabel:SetShadowColor(0, 0, 0, 0.85)
+    self.categoryLabel:SetShadowOffset(1, -1)
     self.categoryLabel:SetText("General")
     self.actionButtons = {}
     local maxActions = 0
@@ -415,18 +506,7 @@ function UI:Create()
             self.actionButtons[idx] = btn
         end
     end
-    local hint = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    hint:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 10, 19)
-    hint:SetText("Drag to move. /pb toggles.")
-    self.lastSentLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    self.lastSentLabel:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 10, 8)
-    self.lastSentLabel:SetWidth(340)
-    self.lastSentLabel:SetJustifyH("LEFT")
-    self.lastSentLabel:SetText("Last: no command sent yet")
-    local refresh = makeButton(frame, "Refresh", 68, 18)
-    refresh:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -10, 6)
-    refresh:SetScript("OnClick", function() UI:RefreshSections() end)
-    bindTooltip(refresh, "Refresh", "Redraw current page and button bindings.")
+    self.lastSentLabel = nil
     self:RenderCategoryButtons()
     self:RenderActions()
     self:RefreshHeader()

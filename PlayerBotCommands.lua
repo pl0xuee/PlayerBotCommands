@@ -1,9 +1,8 @@
 -- PlayerBotCommands - Main Addon Entry Point
 PLAYERBOT = {}
-PLAYERBOT.version = "1.0"
+PLAYERBOT.version = "1.1"
 PLAYERBOT.commands = {}
 PLAYERBOT.capabilities = {}
-PLAYERBOT.chatMode = "AUTO"
 PLAYERBOT.lastSentCommand = ""
 PLAYERBOT.lastChatType = ""
 
@@ -28,14 +27,6 @@ function PLAYERBOT:HasRegisteredCommand(command)
 end
 
 function PLAYERBOT:GetChatType()
-    if self.chatMode == "PARTY" then
-        return "PARTY"
-    end
-
-    if self.chatMode == "RAID" then
-        return "RAID"
-    end
-
     if GetNumRaidMembers and GetNumRaidMembers() > 0 then
         return "RAID"
     end
@@ -199,7 +190,6 @@ function PLAYERBOT:Execute(command, args)
         if self.UI and self.UI.RefreshSections then
             self.UI:RefreshSections()
         end
-        print("|cffffff00[PlayerBot]|r Sent to " .. self:GetChatType() .. " but no local handler: " .. command)
         return true
     end
 
