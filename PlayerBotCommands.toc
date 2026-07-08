@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Title: PlayerBot Commands
-## Version: 1.1
+## Version: 1.1.1
 ## Author: Bot Command Manager
 ## Description: Sleek playerbot command interface for Azerothcore WOTLK 3.3.5
 

@@ -515,5 +515,11 @@ end
 
 function PLAYERBOT:ToggleUI()
     UI:Create()
-    if UI.frame:IsShown() then UI.frame:Hide() else UI.frame:Show() end
+    if UI.frame:IsShown() then
+        self.uiUserVisible = false
+        UI.frame:Hide()
+    else
+        self.uiUserVisible = true
+        UI.frame:Show()
+    end
 end

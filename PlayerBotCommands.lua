@@ -1,10 +1,12 @@
 -- PlayerBotCommands - Main Addon Entry Point
 PLAYERBOT = {}
-PLAYERBOT.version = "1.1"
+PLAYERBOT.version = "1.1.1"
 PLAYERBOT.commands = {}
 PLAYERBOT.capabilities = {}
 PLAYERBOT.lastSentCommand = ""
 PLAYERBOT.lastChatType = ""
+PLAYERBOT.uiUserVisible = true
+PLAYERBOT.wasInGroup = nil
 
 local function getCommandCount()
     local total = 0
@@ -36,6 +38,32 @@ function PLAYERBOT:GetChatType()
     end
 
     return nil
+end
+
+function PLAYERBOT:IsInGroup()
+    return self:GetChatType() ~= nil
+end
+
+function PLAYERBOT:UpdateAutoVisibility()
+    local ui = self.UI
+    if not ui or not ui.frame then
+        return
+    end
+
+    local inGroup = self:IsInGroup()
+
+    if self.wasInGroup and not inGroup then
+        -- Auto-hide only when leaving a party/raid.
+        self.uiUserVisible = false
+        ui.frame:Hide()
+    elseif (not self.wasInGroup) and inGroup then
+        -- Restore the panel when joining a group if the user wants it visible.
+        if self.uiUserVisible then
+            ui.frame:Show()
+        end
+    end
+
+    self.wasInGroup = inGroup
 end
 
 function PLAYERBOT:BuildCommandText(command, args)
@@ -235,11 +263,20 @@ end
 -- Addon load event
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+frame:RegisterEvent("RAID_ROSTER_UPDATE")
 frame:SetScript("OnEvent", function(self, event, addon)
-    if addon == "PlayerBotCommands" then
-        PLAYERBOT:Init()
-        if PLAYERBOT.ToggleUI then
-            PLAYERBOT:ToggleUI()
+    if event == "ADDON_LOADED" then
+        if addon == "PlayerBotCommands" then
+            PLAYERBOT:Init()
+            if PLAYERBOT.UI and PLAYERBOT.UI.Create then
+                PLAYERBOT.UI:Create()
+            end
+            PLAYERBOT:UpdateAutoVisibility()
         end
+        return
     end
+
+    PLAYERBOT:UpdateAutoVisibility()
 end)
